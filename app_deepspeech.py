@@ -27,13 +27,7 @@ def download_file(url, download_to: Path, expected_size=None):
     # Don't download the file twice.
     # (If possible, verify the download using the file length.)
     if download_to.exists():
-        if expected_size:
-            if download_to.stat().st_size == expected_size:
-                return
-        else:
-            st.info(f"{url} is already downloaded.")
-            if not st.button("Download again?"):
-                return
+        return
 
     download_to.parent.mkdir(parents=True, exist_ok=True)
 
@@ -110,13 +104,13 @@ trained on American English is being served.
     )
 
     # https://github.com/mozilla/DeepSpeech/releases/tag/v0.9.3
-    MODEL_URL = "https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm"  # noqa
-    LANG_MODEL_URL = "https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.scorer"  # noqa
-    MODEL_LOCAL_PATH = HERE / "models/deepspeech-0.9.3-models.pbmm"
-    LANG_MODEL_LOCAL_PATH = HERE / "models/deepspeech-0.9.3-models.scorer"
+    MODEL_URL = "https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models-zh-CN.pbmm"  # noqa
+    LANG_MODEL_URL = "https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models-zh-CN.scorer"  # noqa
+    MODEL_LOCAL_PATH = HERE / "models/deepspeech-0.9.3-models-zh-CN.pbmm"
+    LANG_MODEL_LOCAL_PATH = HERE / "models/deepspeech-0.9.3-models-zh-CN.scorer"
 
-    download_file(MODEL_URL, MODEL_LOCAL_PATH, expected_size=188915987)
-    download_file(LANG_MODEL_URL, LANG_MODEL_LOCAL_PATH, expected_size=953363776)
+    download_file(MODEL_URL, MODEL_LOCAL_PATH, expected_size=None)
+    download_file(LANG_MODEL_URL, LANG_MODEL_LOCAL_PATH, expected_size=None)
 
     lm_alpha = 0.931289039105002
     lm_beta = 1.1834137581510284
@@ -194,7 +188,7 @@ def app_sst(model_path: str, lm_path: str, lm_alpha: float, lm_beta: float, beam
                 buffer = np.array(sound_chunk.get_array_of_samples())
                 stream.feedAudioContent(buffer)
                 text = stream.intermediateDecode()
-                text_output.markdown(f"**Text:** {text}")
+                text_output.write(text)
         else:
             status_indicator.write("AudioReciver is not set. Abort.")
             break
